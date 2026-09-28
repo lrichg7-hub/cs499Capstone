@@ -1,9 +1,18 @@
-var fs = require('fs');
-var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
+const tripService = require('../services/tripService');
 
 /* GET travel view */
-const travel = (req, res) => {
-    res.render('travel', { title: 'Travlr Getaways', trips});
+const travel = async (req, res, next) => {
+    try {
+        const trips = await tripService.getAllTrips();
+
+        res.render('travel', {
+            title: 'Travlr Getaways',
+            trips
+        });
+    } catch (err) {
+        console.error('Error retrieving trips:', err);
+        next(err);
+    }
 };
 
 module.exports = {
