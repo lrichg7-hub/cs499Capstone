@@ -15,6 +15,55 @@
 					<div>
 						<div class="body">
 							<h1>Travel</h1>
+							<form action="/travel" method="get">
+  							    <p>
+        							<label for="code">Trip Code:</label>
+        							<input
+            							type="text"
+            							id="code"
+            							name="code"
+            							placeholder="Example: GALR210214">
+    							</p>
+
+    							<p>
+        							<label for="destination">Destination:</label>
+        							<input
+            							type="text"
+            							id="destination"
+            							name="destination"
+            							placeholder="Example: Emerald Bay">
+    							</p>
+
+    							<p>
+        							<label for="maxPrice">Maximum Price:</label>
+        							<input
+            							type="number"
+            							id="maxPrice"
+            							name="maxPrice"
+            							min="0"
+            							step="0.01">
+    							</p>
+
+    							<p>
+        							<label for="sort">Sort by Price:</label>
+        							<select id="sort" name="sort">
+            							<option value="">Default</option>
+            							<option value="price-asc">
+                							Lowest to Highest
+            							</option>
+            							<option value="price-desc">
+                							Highest to Lowest
+            							</option>
+        							</select>
+    							</p>
+
+    							<button type="submit">Search Trips</button>
+    							<a href="/travel">Clear</a>
+							</form>
+
+							{{#if noTrips}}
+    							<p>No trips matched your search.</p>
+							{{/if}}
 							<ul id="sites">
 			{{#each trips}}
 								<li>
