@@ -1,84 +1,184 @@
-<!DOCTYPE html>
-<!-- Website template by freewebsitetemplates.com -->
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Dive Sites - Bhaccasyoniztas Beach Resort Website Template</title>
-	<link rel="stylesheet" href="css/style.css" type="text/css">
+    <title>Travlr Getaways</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
+
 <body>
-	<div id="background">
-		<div id="page">
-			{{> header }}
-			<div id="contents">
-				<div class="box">
-					<div>
-						<div class="body">
-							<h1>Travel</h1>
-							<form action="/travel" method="get">
-  							    <p>
-        							<label for="code">Trip Code:</label>
-        							<input
-            							type="text"
-            							id="code"
-            							name="code"
-            							placeholder="Example: GALR210214">
-    							</p>
+    <div id="background">
+        <div id="page">
 
-    							<p>
-        							<label for="destination">Destination:</label>
-        							<input
-            							type="text"
-            							id="destination"
-            							name="destination"
-            							placeholder="Example: Emerald Bay">
-    							</p>
+            {{> header }}
 
-    							<p>
-        							<label for="maxPrice">Maximum Price:</label>
-        							<input
-            							type="number"
-            							id="maxPrice"
-            							name="maxPrice"
-            							min="0"
-            							step="0.01">
-    							</p>
+            <div id="contents">
+                <div>
+                    <div class="body">
 
-    							<p>
-        							<label for="sort">Sort by Price:</label>
-        							<select id="sort" name="sort">
-            							<option value="">Default</option>
-            							<option value="price-asc">
-                							Lowest to Highest
-            							</option>
-            							<option value="price-desc">
-                							Highest to Lowest
-            							</option>
-        							</select>
-    							</p>
+                        <h1>Travel</h1>
 
-    							<button type="submit">Search Trips</button>
-    							<a href="/travel">Clear</a>
-							</form>
+                        <!-- Trip Search and Filter Form -->
+                        <form action="/travel" method="get">
 
-							{{#if noTrips}}
-    							<p>No trips matched your search.</p>
-							{{/if}}
-							<ul id="sites">
-			{{#each trips}}
-								<li>
-									<a href=“/travel"><img src="images/{{this.image}}" alt="Img"></a>
-									<h2><a href=“/travel">{{this.name}}</a></h2>
-									{{{this.description}}}
-								</li>
-			{{/each}}
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		{{> footer }}
-	</div>
+                            <p>
+                                <label for="code">Trip Code:</label>
+                                <input
+                                    type="text"
+                                    id="code"
+                                    name="code"
+                                    placeholder="Example: GALR210214">
+                            </p>
+
+                            <p>
+                                <label for="destination">Destination:</label>
+                                <input
+                                    type="text"
+                                    id="destination"
+                                    name="destination"
+                                    placeholder="Example: Emerald Bay">
+                            </p>
+
+                            <p>
+                                <label for="maxPrice">Maximum Price:</label>
+                                <input
+                                    type="number"
+                                    id="maxPrice"
+                                    name="maxPrice"
+                                    min="0"
+                                    step="0.01">
+                            </p>
+
+                            <p>
+                                <label for="sort">Sort by Price:</label>
+
+                                <select id="sort" name="sort">
+                                    <option value="">
+                                        Default
+                                    </option>
+
+                                    <option value="price-asc">
+                                        Lowest to Highest
+                                    </option>
+
+                                    <option value="price-desc">
+                                        Highest to Lowest
+                                    </option>
+                                </select>
+                            </p>
+
+                            <button type="submit">
+                                Search Trips
+                            </button>
+
+                            <a href="/travel">Clear</a>
+
+                        </form>
+
+
+                        <!-- No Search Results Message -->
+                        {{#if noTrips}}
+                            <p>No trips matched your search.</p>
+                        {{/if}}
+
+
+                        <!-- MongoDB Aggregation Statistics -->
+                        <h2>Destination Statistics</h2>
+
+                        <table border="1" cellpadding="8">
+
+                            <thead>
+                                <tr>
+                                    <th>Destination</th>
+                                    <th>Number of Trips</th>
+                                    <th>Average Price</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {{#each destinationStats}}
+
+                                    <tr>
+                                        <td>{{this._id}}</td>
+                                        <td>{{this.tripCount}}</td>
+                                        <td>${{this.averagePrice}}</td>
+                                    </tr>
+
+                                {{/each}}
+
+                            </tbody>
+
+                        </table>
+
+                        <br>
+
+
+                        <!-- Trip Results -->
+                        <ul id="sites">
+
+                            {{#each trips}}
+
+                                <li>
+
+                                    <div class="body">
+
+                                        <h2>{{name}}</h2>
+
+                                        <p>
+                                            {{{description}}}
+                                        </p>
+
+                                    </div>
+
+                                    <img
+                                        src="/images/{{image}}"
+                                        alt="{{name}}">
+
+                                </li>
+
+                            {{/each}}
+
+                        </ul>
+
+
+                        <!-- MongoDB Pagination Controls -->
+                        {{#if pagination}}
+
+                            <div class="pagination">
+
+                                {{#if pagination.hasPreviousPage}}
+
+                                    <a href="/travel?page={{pagination.previousPage}}">
+                                        Previous
+                                    </a>
+
+                                {{/if}}
+
+
+                                <span>
+                                    Page {{pagination.currentPage}}
+                                    of {{pagination.totalPages}}
+                                </span>
+
+
+                                {{#if pagination.hasNextPage}}
+
+                                    <a href="/travel?page={{pagination.nextPage}}">
+                                        Next
+                                    </a>
+
+                                {{/if}}
+
+                            </div>
+
+                        {{/if}}
+
+                    </div>
+                </div>
+            </div>
+
+            {{> footer }}
+
+        </div>
+    </div>
 </body>
 </html>

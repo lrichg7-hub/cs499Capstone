@@ -1,4 +1,5 @@
 const tripService = require('../services/tripService');
+
 const {
     filterTrips,
     mergeSortByPrice
@@ -11,38 +12,73 @@ const travel = async (req, res, next) => {
             code,
             destination,
             maxPrice,
-            sort
+            sort,
+            page = 1
         } = req.query;
 
         let trips;
+        let pagination = null;
 
-        // Exact trip-code searches use the Map for O(1)
-        // average lookup after the Map has been built.
+        /*
+         * When the user is searching or sorting, use the
+         * algorithm features created for Milestone Three.
+         * When no search options are being used, retrieve
+         * trips directly from MongoDB using pagination.
+         */
+        const hasSearchOrSort =
+            code ||
+            destination ||
+            maxPrice ||
+            sort;
+
+        // Exact trip-code search uses the Map.
         if (code) {
             const trip = await tripService.getTripByCode(code);
             trips = trip ? [trip] : [];
-        } else {
+
+        } else if (hasSearchOrSort) {
+
             trips = await tripService.getAllTrips();
 
-            // Filtering requires a linear O(n) scan.
+            // Filter by destination and maximum price.
             trips = filterTrips(
                 trips,
                 destination,
                 maxPrice
             );
 
-            // Merge sort provides O(n log n) sorting.
+            // Sort by price using merge sort.
             if (sort === 'price-asc') {
                 trips = mergeSortByPrice(trips);
+
             } else if (sort === 'price-desc') {
                 trips = mergeSortByPrice(trips).reverse();
             }
+
+        } else {
+
+            /*
+             * Default page uses MongoDB pagination.
+             * Two records are retrieved per page so that
+             * pagination can be demonstrated with the
+             * current sample data.
+             */
+            pagination =
+                await tripService.getPaginatedTrips(page, 2);
+
+            trips = pagination.trips;
         }
+
+        // MongoDB aggregation statistics.
+        const destinationStats =
+            await tripService.getDestinationStats();
 
         res.render('travel', {
             title: 'Travlr Getaways',
             trips,
-            noTrips: trips.length === 0
+            noTrips: trips.length === 0,
+            destinationStats,
+            pagination
         });
 
     } catch (err) {
